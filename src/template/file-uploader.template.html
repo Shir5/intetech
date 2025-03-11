@@ -1,0 +1,465 @@
+<style>
+    .reset {
+        all: unset;
+    }
+
+    p {
+        all: unset;
+        display: block;
+        color: rgba(95, 92, 240, 1);
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    :host {
+        display: flex;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        width: 342px;
+        height: 512px;
+        margin: 20px auto;
+        padding: 20px 16px;
+        border-radius: 16px;
+        background-color: rgba(79, 79, 79, 1);
+    }
+
+    #uploadForm {
+        position: relative;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-direction: column;
+        background: linear-gradient(rgba(95, 92, 240, 1) 0%, rgba(221, 220, 252, 1) 35%, rgba(255, 255, 255, 1) 100%);
+        padding: 12px 13px;
+        border-radius: 22px;
+        width: 302px;
+        height: 479px;
+        gap: 10px;
+        overflow: hidden;
+        transition: transform 1.5s ease, padding 1.5s ease, background 0.5s ease-in-out;
+    }
+
+
+    #uploadForm.shrink {
+        transform: scaleY(0.5);
+        padding: 7px 13px;
+        border-radius: 44px;
+    }
+
+    @keyframes shrink {
+        from {
+            transform: scaleY(1);
+            padding: initial;
+            border-radius: initial;
+        }
+
+        to {
+            transform: scaleY(0.5);
+            padding: 7px 13px;
+            border-radius: 44px;
+        }
+    }
+
+    #uploadForm.hide-elements>*:not(#mainCloseButton):not(#messageBox) {
+        display: none;
+    }
+
+    #uploadForm.shrink #messageBox {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scaleY(2);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #uploadForm.shrink #mainCloseButton {
+        top: 20px;
+        transform: scaleY(2);
+    }
+
+    #mainCloseButton {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        width: 34px;
+        height: 34px;
+        padding: 3px;
+        cursor: pointer;
+        z-index: 20;
+    }
+
+    #headerContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    #headerText {
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        width: 277px;
+        height: 48px;
+        gap: 7px;
+        margin-bottom: 7px;
+    }
+
+    #mainHeader {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 24.2px;
+        color: rgba(255, 255, 255, 1);
+        margin: 0;
+    }
+
+    #secondaryHeader {
+        text-align: center;
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 16.94px;
+        color: rgba(255, 255, 255, 1);
+        margin: 0;
+    }
+
+    #inputContainer {
+        position: relative;
+        width: 277px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        gap: 86px;
+    }
+
+    /* Новый класс для скрытия без влияния на разметку */
+    .invisible {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    #nameInput {
+        width: 277px;
+        height: 35px;
+        box-sizing: border-box;
+        padding: 6px 9px;
+        border-radius: 10px;
+        border: 1px solid rgba(165, 165, 165, 1);
+        color: rgba(95, 92, 240, 1);
+        font-weight: 500;
+        font-size: 17.5px;
+        line-height: 21.18px;
+    }
+
+    #nameInput::placeholder {
+        font-size: 17.5px;
+        font-weight: 500;
+        color: rgba(165, 165, 165, 1);
+    }
+
+    #closeButton {
+        display: block;
+        position: absolute;
+        right: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    #closeButton img {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #fileInputContainer {
+        position: relative;
+        flex-shrink: 0;
+        width: 277px;
+        height: 257px;
+        margin: 0 auto;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(165, 165, 165, 1);
+        border-radius: 30px;
+        padding: 42px 27px 17px 27px;
+        box-sizing: border-box;
+    }
+
+    .shift-up {
+        animation: shiftUp 0.5s ease-in-out forwards;
+    }
+
+    @keyframes shiftUp {
+        from {
+            transform: translateY(0);
+        }
+
+        to {
+            transform: translateY(-45px);
+        }
+    }
+
+    #fileInputUi {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 14px;
+        color: rgba(95, 92, 240, 1);
+    }
+
+    #fileInputContainer.dragging {
+        border: 2px dashed #5f5cf0;
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    #fileInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    #fileSvgImage {
+        width: 180.09px;
+        height: 125.85px;
+        position: relative;
+        pointer-events: none;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 1rem;
+    }
+
+    .hidden {
+        animation: hide 0.3s forwards;
+    }
+
+    @keyframes hide {
+        from {
+            opacity: 1;
+            display: initial;
+        }
+
+        to {
+            opacity: 0;
+            display: none;
+        }
+    }
+
+    .highlighted {
+        border: 2px solid #5f5cf0 !important;
+    }
+
+    .success {
+        background: linear-gradient(rgba(34, 197, 94, 1) 0%, rgba(167, 243, 208, 1) 35%, rgba(255, 255, 255, 1) 100%);
+        transition: background 0.5s ease-in-out;
+    }
+
+    .error {
+        background: linear-gradient(rgba(220, 38, 38, 1) 0%, rgba(252, 165, 165, 1) 35%, rgba(255, 255, 255, 1) 100%);
+        transition: background 0.5s ease-in-out;
+    }
+
+    .loadingMainContainer {
+        display: flex;
+        position: absolute;
+        bottom: 80px;
+        flex-direction: row;
+        gap: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(165, 165, 165, 1);
+        padding: 3px;
+        margin-top: 10px;
+        width: 277px;
+        height: 35px;
+        box-sizing: border-box;
+    }
+
+    #loadingLogicContainer {
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        gap: 6px;
+        width: 182px;
+        height: 24px;
+    }
+
+    #loadingLogicContainer p {
+        height: 12px;
+        width: 75px;
+        padding: 0;
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 100%;
+    }
+
+    #loadingInfo {
+        display: inline-flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 182px;
+        height: fit-content;
+    }
+
+    #progressText {
+        font-size: 10px;
+        font-weight: 400;
+        color: rgba(95, 92, 240, 1);
+    }
+
+    progress {
+        -webkit-appearance: none;
+        appearance: none;
+        position: relative;
+        width: 179px;
+        height: 4px;
+        top: 1px;
+        left: 1px;
+        border-radius: 10px;
+    }
+
+    progress::-webkit-progress-bar {
+        background-color: #ddd;
+        height: 4px;
+        border-radius: 10px;
+    }
+
+    progress::-webkit-progress-value {
+        background-color: #5f5cf0;
+        height: 4px;
+        border-radius: 10px;
+        transition: width 0.4s ease-in-out;
+    }
+
+    progress::-moz-progress-bar {
+        background-color: #5f5cf0;
+        height: 4px;
+        border-radius: 10px;
+        transition: width 0.4s ease-in-out;
+    }
+
+    #loadingCloseButton {
+        position: relative;
+        background: transparent;
+        border: 0;
+        padding: 3px;
+        cursor: pointer;
+    }
+
+    #uploadBtn {
+        width: 277px;
+        height: 56px;
+        border-radius: 30px;
+        border: 0;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 24.2px;
+        padding: 16px 86px;
+        background-color: rgba(95, 92, 240, 1);
+        color: #fff;
+        gap: 10px;
+    }
+
+    #uploadBtn:disabled {
+        background-color: rgba(187, 185, 210, 1);
+        color: rgba(255, 255, 255, 1);
+    }
+
+    /* Блок для сообщений */
+    #messageBox {
+        width: 277px;
+        height: 102px;
+        height: fit-content;
+        padding: 16px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        text-align: center;
+        transition: background 0.5s ease-in-out;
+        background: transparent;
+
+    }
+
+    #messageBox h1 {
+        font-size: 20px;
+    }
+
+    #messageBox p {
+        align-items: center !important;
+        font-size: 14px;
+        font-weight: 300;
+        max-width: 140px;
+        margin: 0 auto;
+        text-align: left !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        color: #fff;
+    }
+
+    .msg-success {
+        background: linear-gradient(rgba(95, 92, 240, 1), rgba(143, 141, 244, 1));
+        color: #fff;
+    }
+
+    .msg-error {
+        background: linear-gradient(rgba(240, 92, 92, 1), rgba(143, 141, 244, 1));
+        color: #fff;
+    }
+</style>
+
+<form id="uploadForm">
+    <button type="button" id="mainCloseButton" aria-label="Закрыть компонент"
+        onclick="console.log('Закрыть модальное окно')">
+        <img src="svg/mainCloseButton.svg" alt="Закрыть компонент">
+    </button>
+    <div id="headerContainer">
+        <div id="headerText">
+            <h1 id="mainHeader">Загрузочное окно</h1>
+            <h2 id="secondaryHeader">Перед загрузкой дайте имя файлу</h2>
+        </div>
+        <div id="inputContainer">
+            <input type="text" id="nameInput" name="name" placeholder="Название файла" required />
+            <button type="button" id="closeButton" aria-label="Очистить поле">
+                <img src="svg/closeSvg.svg" alt="Очистить поле">
+            </button>
+        </div>
+    </div>
+    <div id="fileInputContainer">
+        <input type="file" id="fileInput" name="file" accept=".txt,.json,.csv" required />
+        <div id="fileInputUi">
+            <img src="svg/docsSvg.svg" alt="Иконка файлов" id="fileSvgImage">
+            <label for="fileInput">Перенесите ваш файл в область ниже</label>
+        </div>
+    </div>
+    <div class="loadingMainContainer hidden" id="loadingContainer">
+        <img src="svg/loadingBarIcon.svg" alt="Иконка загрузки" id="loadingBarIcon">
+        <div id="loadingLogicContainer">
+            <div id="loadingInfo">
+                <p></p>
+                <span id="progressText">0%</span>
+            </div>
+            <progress id="progressBar" value="0" max="100"></progress>
+        </div>
+        <button type="button" id="loadingCloseButton" aria-label="Открепить файл">
+            <img src="svg/loadingCloseButton.svg" alt="Открепить файл">
+        </button>
+    </div>
+    <button type="submit" id="uploadBtn" disabled>Загрузить</button>
+    <div id="messageBox" class="hidden"></div>
+</form>
