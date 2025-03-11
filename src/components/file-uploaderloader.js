@@ -362,6 +362,8 @@ export class FileUploader extends HTMLElement {
         setTimeout(() => {
             this.uploadForm.classList.remove('hide-elements');
         }, 500);
+        this.uploadBtn.disabled = false;
+
     }
 }
 
