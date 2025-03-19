@@ -23,6 +23,12 @@
         background-color: rgba(79, 79, 79, 1);
     }
 
+    :host(.blocked) {
+        pointer-events: none;
+        opacity: 0.9;
+    }
+
+
     #uploadForm {
         position: relative;
         box-sizing: border-box;
@@ -31,35 +37,24 @@
         justify-content: flex-end;
         flex-direction: column;
         background: linear-gradient(rgba(95, 92, 240, 1) 0%, rgba(221, 220, 252, 1) 35%, rgba(255, 255, 255, 1) 100%);
-        padding: 12px 13px;
+        padding: 20px 13px;
         border-radius: 22px;
         width: 302px;
         height: 479px;
         gap: 10px;
         overflow: hidden;
-        transition: transform 1.5s ease, padding 1.5s ease, background 0.5s ease-in-out;
+        transition: height 0.5s ease, padding 0.5s ease, margin 0.5s ease;
     }
-
 
     #uploadForm.shrink {
-        transform: scaleY(0.5);
-        padding: 7px 13px;
-        border-radius: 44px;
+        height: 230px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-top: 50px;
+        margin-bottom: 50px;
     }
 
-    @keyframes shrink {
-        from {
-            transform: scaleY(1);
-            padding: initial;
-            border-radius: initial;
-        }
 
-        to {
-            transform: scaleY(0.5);
-            padding: 7px 13px;
-            border-radius: 44px;
-        }
-    }
 
     #uploadForm.hide-elements>*:not(#mainCloseButton):not(#messageBox) {
         display: none;
@@ -69,28 +64,28 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scaleY(2);
+        transform: translate(-50%, -50%);
         opacity: 1;
         pointer-events: auto;
     }
 
     #uploadForm.shrink #mainCloseButton {
         top: 20px;
-        transform: scaleY(2);
     }
 
     #mainCloseButton {
         position: absolute;
+        z-index: 20;
         top: 10px;
         right: 15px;
-        background: none;
-        border: none;
         width: 34px;
         height: 34px;
         padding: 3px;
         cursor: pointer;
-        z-index: 20;
+        background: none;
+        border: none;
     }
+
 
     #headerContainer {
         display: flex;
@@ -135,7 +130,6 @@
         gap: 86px;
     }
 
-    /* Новый класс для скрытия без влияния на разметку */
     .invisible {
         opacity: 0;
         pointer-events: none;
@@ -374,22 +368,26 @@
         background-color: rgba(95, 92, 240, 1);
         color: #fff;
         gap: 10px;
+        cursor: pointer;
     }
+
+
 
     #uploadBtn:disabled {
         background-color: rgba(187, 185, 210, 1);
         color: rgba(255, 255, 255, 1);
+        cursor: not-allowed;
     }
 
-    /* Блок для сообщений */
     #messageBox {
         width: 277px;
         height: 102px;
-        height: fit-content;
+        justify-self: flex-start;
         padding: 16px 16px;
         border-radius: 10px;
         font-size: 14px;
         text-align: center;
+        overflow-y: scroll;
         transition: background 0.5s ease-in-out;
         background: transparent;
 
@@ -397,6 +395,7 @@
 
     #messageBox h1 {
         font-size: 20px;
+
     }
 
     #messageBox p {
